@@ -1,0 +1,30 @@
+import hashlib
+import datetime
+import random
+ 
+class Block:
+	def getPoWHash (self, data):
+		nonce = str(random.randint(0, 300000))
+		noncedData = data + nonce
+		hash = hashlib.sha256 (noncedData.encode('utf-8')).hexdigest()
+		#hashlib requires data to be encoded before hashed.
+		if hash.startswith ("00"):
+			self.nonce = nonce
+			return hash
+		else:
+			return self.getPoWHash (data)
+ 
+	def __init__ (self, data, previousHash):
+		self.data = data
+		self.nonce = None
+		self.previousHash = previousHash
+		self.timeStamp = datetime.datetime.now()
+		self.hash = self.getPoWHash (data)
+ 
+genesisBlock = Block("I am genesis block!", 0)
+secondBlock = Block("I am second block", genesisBlock.hash)
+thirdBlock = Block("I am third block", secondBlock.hash)
+ 
+print ("Genesis Block Hash: ", genesisBlock.hash)
+print ("Second Block Hash: ", secondBlock.hash)
+print ("Third Block Hash: ", thirdBlock.hash)
